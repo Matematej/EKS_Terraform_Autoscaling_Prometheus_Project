@@ -1,4 +1,5 @@
-#EKS Cluster
+ # EKS Cluster
+  # IAM Role. Every good IAM Role should have at least 2 parts: sts:Assume and permissons.
 resource "aws_iam_role" "demo" {
   name = "eks-cluster-demo"
 
@@ -18,11 +19,13 @@ resource "aws_iam_role" "demo" {
 POLICY
 }
 
+  # This AWS Managed policy provides Kubernetes the permissions it requires to manage resources on your behalf.
 resource "aws_iam_role_policy_attachment" "demo-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.demo.name
 }
 
+  # The EKS cluster 
 resource "aws_eks_cluster" "demo" {
   name     = "demo"
   role_arn = aws_iam_role.demo.arn
@@ -39,7 +42,8 @@ resource "aws_eks_cluster" "demo" {
   depends_on = [aws_iam_role_policy_attachment.demo-AmazonEKSClusterPolicy]
 }
 
-#Nodes
+ # The EC2 instances / EKS Nodes
+   # IAM Role. Every good IAM Role should have at least 2 parts: sts:Assume and permissons.
 resource "aws_iam_role" "nodes" {
   name = "eks-node-group-nodes"
 
@@ -55,21 +59,27 @@ resource "aws_iam_role" "nodes" {
   })
 }
 
+  # This AWS Managed policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
 resource "aws_iam_role_policy_attachment" "nodes-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.nodes.name
 }
 
+  # This AWS Managed policy provides the Amazon VPC CNI Plugin the permissions it requires to modify the IP address configuration on your EKS worker nodes.
+  # This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.
 resource "aws_iam_role_policy_attachment" "nodes-AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.nodes.name
 }
 
+  # This AWS Managed policy provides read-only access to Amazon EC2 Container Registry repositories.
+  # It allows us to download and use images from ECR repo.
 resource "aws_iam_role_policy_attachment" "nodes-AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.nodes.name
 }
 
+  # EKS Node Group. Placing it in private subnet will give it Private IP.
 resource "aws_eks_node_group" "private-nodes" {
   cluster_name    = aws_eks_cluster.demo.name
   node_group_name = "private-nodes"
@@ -92,7 +102,7 @@ resource "aws_eks_node_group" "private-nodes" {
   update_config {
     max_unavailable = 1
   }
-
+  # Look at labels and taints later what they do!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   labels = {
     role = "general"
   }
@@ -103,32 +113,12 @@ resource "aws_eks_node_group" "private-nodes" {
   #   effect = "NO_SCHEDULE"
   # }
 
-  # launch_template {
-  #   name    = aws_launch_template.eks-with-disks.name
-  #   version = aws_launch_template.eks-with-disks.latest_version
-  # }
-
   depends_on = [
     aws_iam_role_policy_attachment.nodes-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.nodes-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.nodes-AmazonEC2ContainerRegistryReadOnly,
   ]
 }
-
-# resource "aws_launch_template" "eks-with-disks" {
-#   name = "eks-with-disks"
-
-#   key_name = "local-provisioner"
-
-#   block_device_mappings {
-#     device_name = "/dev/xvdb"
-
-#     ebs {
-#       volume_size = 50
-#       volume_type = "gp2"
-#     }
-#   }
-# }
 
 #IAM OIDC provider
 data "tls_certificate" "eks" {
