@@ -42,8 +42,8 @@ resource "aws_eks_node_group" "private-nodes" {
   node_role_arn   = aws_iam_role.nodes.arn
 
   subnet_ids = [
-    aws_subnet.private-us-east-1a.id,
-    aws_subnet.private-us-east-1b.id
+    module.landing_zone.private-us-east-1a,
+    module.landing_zone.private-us-east-1b
   ]
 
   capacity_type  = "ON_DEMAND"
@@ -51,7 +51,7 @@ resource "aws_eks_node_group" "private-nodes" {
 
   scaling_config {
     desired_size = 1
-    max_size     = 5
+    max_size     = 2
     min_size     = 0
   }
 
@@ -68,11 +68,4 @@ resource "aws_eks_node_group" "private-nodes" {
   #   value  = "devops"
   #   effect = "NO_SCHEDULE"
   # }
-
-/*  depends_on = [
-    aws_iam_role_policy_attachment.nodes-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.nodes-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.nodes-AmazonEC2ContainerRegistryReadOnly,
-  ]
-  */
 }

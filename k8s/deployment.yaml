@@ -35,8 +35,3 @@ spec:
                 operator: In
                 values:
                 - general
-      # tolerations:
-      # - key: team
-      #   operator: Equal
-      #   value: devops
-      #   effect: NoSchedule

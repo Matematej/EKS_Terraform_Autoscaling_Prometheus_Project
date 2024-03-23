@@ -6,3 +6,7 @@ provider "aws" {
   region = "us-east-1"
   profile = "Workloads-profile"
 }
+
+module "landing_zone" {
+  source = "../landing_zone"
+}
