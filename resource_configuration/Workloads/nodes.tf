@@ -35,9 +35,9 @@ resource "aws_iam_role_policy_attachment" "nodes-AmazonEC2ContainerRegistryReadO
   role       = aws_iam_role.nodes.name
 }
 
-  # EKS Node Group. Placing it in private subnet will give it Private IP.
+  # EKS Node Group. Placing it in private subnet will give them Private IP.
 resource "aws_eks_node_group" "private-nodes" {
-  cluster_name    = aws_eks_cluster.demo.name
+  cluster_name    = aws_eks_cluster.MyCluster.name
   node_group_name = "private-nodes"
   node_role_arn   = aws_iam_role.nodes.arn
 
