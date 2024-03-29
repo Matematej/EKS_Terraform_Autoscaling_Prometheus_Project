@@ -1,4 +1,4 @@
-/*
+
  # Role that your Pods will assume. Every good IAM Role should have at least 2 parts: sts:Assume and permissons.
  # This role has to be referenced in service_account annotations
  resource "aws_iam_role" "eks_cluster_autoscaler" {
@@ -53,4 +53,3 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_autoscaler_attach" {
   role       = aws_iam_role.eks_cluster_autoscaler.name
   policy_arn = aws_iam_policy.eks_cluster_autoscaler.arn
 }
-*/

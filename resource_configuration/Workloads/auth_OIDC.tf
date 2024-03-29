@@ -1,4 +1,4 @@
-/*
+
  # OpenID Connect provider
 resource "aws_iam_openid_connect_provider" "eks" {
   client_id_list  = ["sts.amazonaws.com"]
@@ -10,4 +10,3 @@ resource "aws_iam_openid_connect_provider" "eks" {
 data "tls_certificate" "eks" {
   url = aws_eks_cluster.MyCluster.identity[0].oidc[0].issuer
 }
-*/

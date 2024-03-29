@@ -1,10 +1,10 @@
-
+/*
  # Get an authentication token
 data "aws_eks_cluster_auth" "MyCluster" {
   name = data.aws_eks_cluster.MyCluster.id
 }
 
- data "aws_eks_cluster" "MyCluster" {
+data "aws_eks_cluster" "MyCluster" {
   name = "MyCluster"
 }
 
@@ -14,3 +14,4 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.MyCluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.MyCluster.token
 }
+*/
