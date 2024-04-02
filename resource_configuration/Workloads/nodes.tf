@@ -46,16 +46,16 @@ resource "aws_eks_node_group" "private-nodes" {
     module.landing_zone.private-us-east-1b
   ]
 
-  capacity_type  = "ON_DEMAND"
+  capacity_type  = "SPOT"
   instance_types = ["t3.small"]
 
   scaling_config {
-    desired_size = 2
+    desired_size = 1
     max_size     = 4
-    min_size     = 0
+    min_size     = 1
   }
-
+/*
   update_config {
     max_unavailable = 1
-  }
+  }*/
 }
