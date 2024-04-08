@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
     Environment = "Dev"
   }
 }
-
+ # Private Subnets for EKS
 resource "aws_subnet" "private-us-east-1a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.0.0/19"
@@ -35,6 +35,7 @@ resource "aws_subnet" "private-us-east-1b" {
   }
 }
 
+ # Public Subnets for ELB
 resource "aws_subnet" "public-us-east-1a" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.64.0/19"

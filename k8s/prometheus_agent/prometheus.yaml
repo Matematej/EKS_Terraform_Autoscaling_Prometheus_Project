@@ -9,7 +9,7 @@ spec:
   serviceAccountName: prometheus
   serviceMonitorSelector:
     matchLabels:
-      component: prometheus-agent
+      component: prometheus-agent # Every service monitor has to have label component: prometheus-agent
   serviceMonitorNamespaceSelector:
     matchLabels:
       monitoring: prometheus-agent
@@ -25,8 +25,7 @@ spec:
   logFormat: logfmt
   scrapeInterval: 30s
   remoteWrite:
-  # TODO: replace with your workspace
-  - url: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-95700d61-cdec-43fd-b11c-8a8c72fc57c0/api/v1/remote_write
+  - url: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-4c5f6217-1f45-4602-a7b1-17b9b5a48ddb/api/v1/remote_write
     sigv4:
       region: us-east-1
     queueConfig:

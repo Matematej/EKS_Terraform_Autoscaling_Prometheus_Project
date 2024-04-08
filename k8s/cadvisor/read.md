@@ -1,0 +1,1 @@
+cAdvisor provides detailed insights into resource usage and performance characteristics of running containers. It collects system-level metrics from containers.

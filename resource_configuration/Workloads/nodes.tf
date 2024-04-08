@@ -47,15 +47,15 @@ resource "aws_eks_node_group" "private-nodes" {
   ]
 
   capacity_type  = "SPOT"
-  instance_types = ["t3.small"]
+  instance_types = ["t3.medium"]
 
   scaling_config {
-    desired_size = 1
-    max_size     = 4
+    desired_size = 2
+    max_size     = 5
     min_size     = 1
   }
-/*
-  update_config {
-    max_unavailable = 1
-  }*/
+
+  tags = {
+    role = "general"
+  }
 }
