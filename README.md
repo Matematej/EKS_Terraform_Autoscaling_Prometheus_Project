@@ -1,4 +1,4 @@
-In this project, we are going to use EKS Service Account to grant permissions to individual Pods. You can define a Service Accounts in service_account.yaml and attach an IAM Roles with permissions to Pods based on what SA they're using. In our case, the SA is given auto-scaling permissions. 
+In this project, we are going to use EKS Service Accounts to grant permissions to individual Pods. You can define a Service Account in service_account.yaml and attach IAM Roles with permissions to Pods based on what SA they're using. In our case, the application_pods SA is given auto-scaling permissions. 
 
   For the SA to work, it needs to be able to communicate with AWS IAM. This will be achieved by using an identity provider(IdP). 
     The Workflow:
@@ -6,34 +6,38 @@ In this project, we are going to use EKS Service Account to grant permissions to
       2- Pods in your Cluster send the security creadentials to an IdP.
       3- The IdP accepts the security credentials and sends back a Security Token.
       4- Pods will turn the Security Token into temporary credentials by using AssumeRoleWithWebIdentity.
-  As your Identity provider, can use either OpenID Connect(auth_OIDC.tf) OR SAML(auth_SAML.tf)
+  As your Identity provider, can use either OpenID Connect(auth_OIDC.tf) OR SAML(auth_SAML.tf).
 
-We are also using:
+We are also going to be using logging:
   EKS Controller Logging
   EKS Worker Nodes Logging using Prometheus and Grafana
     The Workflow:
-      1- Metrics will be collected by Amazon Managed Service for Prometheus.
-      2- For your pods to be able to access/write to AMP, they will once again use IAM Role through OIDC. It's a Best practice to use separate SAs for different tasks or services. That's why we are using another SA for AMP and not the SA for autoscaling.
+      1- For your pods to be able to access/write to Amazon Managed Service for Prometheus, they will once again use IAM Role through OIDC. It's a Best practice to use separate SAs for different tasks or services (That's why we are using another SA for AMP and not the SA for autoscaling).
+      2- Prometheus Agent will discover Service Monitors with the same label that's defined in prometheus.yaml.
+      3- Metrics will be collected by AMP.
+      4- Metrics will be queried by Grafana.
 
 How to run:
-  1- git pull
-  2- Uncomment one of the Identity Providers and Cluster Autoscalers
-  2- Uncomment one of the Cluster Autoscalers
-  2- terraform init, terraform plan, terraform apply apply
+  1- git pull https://github.com/Matematej/EKS_Terraform_Project.git
+  2.0- terraform init
+  2.1- terraform plan
+  2.2- terraform apply
   3- aws eks update-kubeconfig --region us-east-1 --name MyCluster
-  6- 
-  kubectl create -f k8s/prometheus_operator_crd
-  kubectl apply -f k8s/application_pods
-  kubectl apply -f k8s/prometheus_operator
-  kubectl apply -f k8s/prometheus_agent
-  kubectl apply -f k8s/node_exporter
-  kubectl apply -f k8s/cadvisor
-  kubectl apply -f k8s/kube_state_metrics
-  7- kubectl label nodes --all role=general
-  kubectl label namespace default monitoring=prometheus-agent
-  8- kubectl port-forward -n monitoring prometheus-agent-0 9090:9090
-  9- http://localhost:9090
-  10- terraform destroy
-
-My takeaways:
-  1- Labels are used to identify and organize resources within the cluster. They play a crucial role in various aspects of managing and monitoring workloads and selectors.
+  4- 
+    kubectl create -f k8s/prometheus_operator_crd
+    kubectl apply -f k8s/application_pods
+    kubectl apply -f k8s/prometheus_operator
+    kubectl apply -f k8s/prometheus_agent
+    kubectl apply -f k8s/node_exporter
+    kubectl apply -f k8s/cadvisor
+    kubectl apply -f k8s/kube_state_metrics
+  5.0- [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("username123")) # create new username for grafana
+  5.1- [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("password123")) # create new password for grafana
+  6- kubectl apply -R -f k8s/grafana # Modify the secret.yaml BEFORE applying
+  7- kubectl label nodes --all role=general # application_pods will only deploy to nodes labeled role=general
+  8- kubectl label namespace default monitoring=prometheus-agent # service monitors will only be discovered if they're in a namespace labeled monitoring=prometheus-agent
+  9- kubectl port-forward -n monitoring prometheus-agent-0 9090:9090
+  10- kubectl port-forward -n monitoring svc/grafana 3000
+  11- http://localhost:9090
+  12- http://localhost:3000
+  13- terraform destroy

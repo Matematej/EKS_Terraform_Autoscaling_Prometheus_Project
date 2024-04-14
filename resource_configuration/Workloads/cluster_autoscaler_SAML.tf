@@ -1,3 +1,4 @@
+ # NOT FINISHED
 /*
  # Role that your Pods will assume. Every good IAM Role should have at least 2 parts: sts:Assume and permissons.
  # This role has to be referenced in service_account annotations

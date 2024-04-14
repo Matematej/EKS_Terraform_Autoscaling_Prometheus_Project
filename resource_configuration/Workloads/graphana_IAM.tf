@@ -1,3 +1,8 @@
+resource "aws_iam_role" "grafana_MyCluster" {
+  assume_role_policy = data.aws_iam_policy_document.grafana_MyCluster.json
+  name               = "grafana-MyCluster"
+}
+
 data "aws_iam_policy_document" "grafana_MyCluster" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -6,7 +11,7 @@ data "aws_iam_policy_document" "grafana_MyCluster" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:cluster-autoscaler"]
+      values   = ["system:serviceaccount:monitoring:grafana"]
     }
 
     principals {
@@ -14,11 +19,6 @@ data "aws_iam_policy_document" "grafana_MyCluster" {
       type        = "Federated"
     }
   }
-}
-
-resource "aws_iam_role" "grafana_MyCluster" {
-  assume_role_policy = data.aws_iam_policy_document.grafana_MyCluster.json
-  name               = "grafana-MyCluster"
 }
 
  # This AWS Managed policy grants access to run queries against AWS Managed Prometheus resources.
