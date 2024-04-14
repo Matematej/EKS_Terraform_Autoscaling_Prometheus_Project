@@ -1,1 +1,1 @@
-Kube State Metrics is also for monitoring but collects different types of metrics that cAdvisor. Kube-state-metrics collects metrics about the state of Kubernetes objects.
+Kube State Metrics is also for monitoring but collects different types of metrics than cAdvisor. Kube-state-metrics collects metrics about the state of Kubernetes objects.
